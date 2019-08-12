@@ -22,36 +22,14 @@ def parse_KV_file(file, separator='=')
     return pods_array
 end
 
-# 远程的plugins文件解析
-def pod_remote_flugins_file(plugin_helper_local_path, pod_file)
-    # If this wasn't specified, assume it's two levels up from the directory of this script.
-    print "解析并写入pod plugin \n"
-    plugin_pods_file = parse_KV_file(File.join(plugin_helper_local_path))
-    plugin_pods_file.map { |r|
-        print "plugin_pods_file = ",r[:name]," \n"
-        pod r[:name], :path => File.join(pod_file, 'LYFlutter/Plugins', r[:name])
-    }
-end
-
 # 远程的plugins文件下载并解析
-def down_remote_plugins_file(branch, pod_file)
-    liya_flutter_url = "https:xxxx/iOS/LYFlutter"
-    liya_flutter_git_url = liya_flutter_url+".git"
-    plugin_helper_url = liya_flutter_url+"/raw/"+branch+"/PluginTool/.flutter-plugins"
-    
-    plugin_helper_local_path = './.flutter-plugins'
-    
-    print "下载 plugins 解析文件 \n"
-    download = open(plugin_helper_url)
-    IO.copy_stream(download, plugin_helper_local_path)
-    
-    pod 'LYFlutter', :git => liya_flutter_git_url, :branch => branch
-    pod 'FlutterFrame_Debug', :git => liya_flutter_git_url, :branch => branch, :configurations => 'Debug'
-    pod 'FlutterFrame_Release', :git => liya_flutter_git_url, :branch => branch, :configurations => 'Release'
-    
-    pod_remote_flugins_file(plugin_helper_local_path, pod_file)
-    
-    File.delete(plugin_helper_local_path)
+def down_remote_plugins_file(podspecPath)
+    lyflutter_path = podspecPath+'/LYFlutter.podspec'
+    flutter_debug_path = podspecPath+'/FlutterFrame_Debug.podspec'
+    flutter_release_path = podspecPath+'/FlutterFrame_Release.podspec'
+    pod 'LYFlutter', :podspec => lyflutter_path
+    pod 'FlutterFrame_Debug', :podspec => flutter_debug_path, :configurations => ['Debug']
+    pod 'FlutterFrame_Release', :podspec => flutter_release_path, :configurations => ['Release']
 end
 
 # 设置flutter_application_path（本地 flutter 的项目路径）， 传nil即只进行bitcode处理（远程时）
@@ -90,19 +68,17 @@ def local_remote_plugins_file(flutter_application_path)
     }
 end
 
-# branch-分支的名称，主工程的pods路径
-#down_remote_plugins_file("feature/liya_test_2", __dir__+"/Pods")
+# flutter_podspecPath-引用的flutter的podspec路径，默认如下
+#down_remote_plugins_file("https://.../LYFlutter/raw/master")
 
 # 本地 flutter 工程的路径
 #local_remote_plugins_file("/Users/.../liya_flutter")
 
-if !$flutter_pod_path.nil?
-    if $flutter_branch.nil?
-        $flutter_branch = "master"
-    end
-    down_remote_plugins_file($flutter_branch, $flutter_pod_path)
-elsif !$flutter_application_path.nil?
+if !$flutter_application_path.nil?
     local_remote_plugins_file($flutter_application_path)
 else
-    raise "请正确输入 远程依赖的分支名称（默认master）及 主工程的pods路径 \n 或者 请正确输入 本地依赖的本地 flutter 工程的路径 \n"
+    if $flutter_podspec_path.nil?
+        $flutter_podspec_path = "https://.../LYFlutter/raw/master"
+    end
+    down_remote_plugins_file($flutter_podspec_path)
 end

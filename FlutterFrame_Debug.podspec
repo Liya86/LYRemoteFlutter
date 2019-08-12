@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
 	s.name = 'FlutterFrame_Debug'
-	s.version = '0.1'
+	s.version = '1.0.0.0001'
 	s.description = 'Flutter Debug 模式静态包'
 	s.license = 'MIT'
 	s.summary = 'FlutterFrame_Debug'
@@ -11,7 +11,6 @@ Pod::Spec.new do |s|
 	s.requires_arc = true
 	s.ios.deployment_target = '8.0'
 
-    s.vendored_frameworks = 'Flutter/Flutter.framework', 'Flutter/App.framework'
-    s.resources = 'Flutter/flutter_assets'
+    s.vendored_frameworks = 'Flutter_Debug/**/*.framework'
 
 end

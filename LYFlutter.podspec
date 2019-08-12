@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 	s.name = 'LYFlutter'
-	s.version = '0.1'
+	s.version = '1.0.0.0001'
 	s.description = 'Flutter 工程相关源代码 '
 	s.license = 'MIT'
 	s.summary = 'LYFlutter'
@@ -15,6 +15,5 @@ Pod::Spec.new do |s|
 
     s.source_files = 'Source/**/*.{h,m,c}'
     s.public_header_files = 'Source/**/*.h'
-    s.preserve_paths = 'PluginTool/pluginspodhelper.rb', 'Plugins/**/*.{*}', 'PluginTool/.flutter-plugins'
 
 end
